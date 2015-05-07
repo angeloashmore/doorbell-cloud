@@ -1,0 +1,14 @@
+{
+    "applications": {
+        "Sample App": {
+            "applicationId": "DJlID2KyyrJHkOCqrqUmnmZt1lfuYJLFZ5gcuXeq", 
+            "masterKey": "i14lF5IFPcyb6ivDiyQ6hbj5t8Yd0EoH1ZA0sa8I"
+        }, 
+        "_default": {
+            "link": "Sample App"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.4.2"
+    }
+}
