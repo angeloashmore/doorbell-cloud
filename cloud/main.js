@@ -1,6 +1,14 @@
 var Stripe = require('stripe');
 Stripe.initialize("sk_test_QSGWG4k2CfgfD10hXdWVdOXc");
 
+Parse.Cloud.beforeSave(Parse.User, function(request, response) {
+  if (!request.object.get("email")) {
+    response.error("email is required for signup");
+  } else {
+    response.success();
+  }
+});
+
 Parse.Cloud.define("User__create", function(request, response) {
   Parse.Promise.as().then(function() {
     var user = new Parse.User();
