@@ -1,7 +1,7 @@
 var Stripe = require('stripe');
 Stripe.initialize("sk_test_QSGWG4k2CfgfD10hXdWVdOXc");
 
-Parse.Cloud.define("User__create", function(request, response) {
+Parse.Cloud.define("User.create", function(request, response) {
   Parse.Promise.as().then(function() {
     var user = new Parse.User();
     user.set("username", request.params.username);
