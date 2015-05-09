@@ -3,10 +3,14 @@ Stripe.initialize("sk_test_QSGWG4k2CfgfD10hXdWVdOXc");
 
 Parse.Cloud.beforeSave(Parse.User, function(request, response) {
   if (!request.object.get("email")) {
-    response.error("email is required for signup");
-  } else {
-    response.success();
+    return response.error("email is required for signup");
   }
+
+  if (!request.object.get("name")) {
+    return response.error("name is required for signup");
+  }
+
+  response.success();
 });
 
 Parse.Cloud.define("User__create", function(request, response) {
@@ -15,6 +19,7 @@ Parse.Cloud.define("User__create", function(request, response) {
     user.set("username", request.params.username);
     user.set("password", request.params.password);
     user.set("email", request.params.email);
+    user.set("name", request.params.name);
 
     return user.signUp()
       .fail(function(error) {
