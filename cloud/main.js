@@ -46,3 +46,50 @@ Parse.Cloud.define("User__create", function(request, response) {
     response.error(error);
   });
 });
+
+Parse.Cloud.define("User__addCardToken", function(request, response) {
+  var user = request.user;
+  var token = request.params.token;
+
+  Parse.Promise.as().then(function() {
+    // Check if a user was logged in.
+    if (!user) {
+      return Parse.Promise.error("User is not logged in");
+    }
+
+    // Check if a Stripe token was provided.
+    if (!token) {
+      return Parse.Promise.error("Stripe token was not provided");
+    }
+
+  }).then(function() {
+    var data = {
+      source: token
+    };
+
+    return Stripe.Customers.update(user.get("stripeCustomerId"), data)
+      .then(function(customer) {
+        return customer;
+      })
+      .fail(function(error) {
+        return Parse.Promise.error("Stripe customer could not be updated. Error: " + error);
+      });
+
+  }).then(function(customer) {
+    var source = customer.sources.data[0];
+
+    user.set("billingBrand", source.brand);
+    user.set("billingLast4", source.last4);
+
+    user.save()
+      .then(function(user) {
+        response.success(user);
+      })
+      .fail(function(error) {
+        return Parse.Promise.error("User could not be updated with card info. Error: " + error);
+      });
+
+  }, function(error) {
+    response.error(error);
+  });
+});
