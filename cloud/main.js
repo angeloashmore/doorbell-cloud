@@ -109,8 +109,8 @@ Parse.Cloud.define("User__addCardToken", function(request, response) {
         return Parse.Promise.error("User could not be updated with card info. Error: " + error.message);
       });
 
-  }).then(function(billing) {
-    response.success(billing);
+  }).then(function() {
+    response.success(user);
 
   }, function(error) {
     response.error(error);
