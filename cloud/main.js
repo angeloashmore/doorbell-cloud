@@ -15,20 +15,24 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
 
 Parse.Cloud.define("User__create", function(request, response) {
   Parse.Promise.as().then(function() {
-    var user = new Parse.User();
+    var user = new Parse.Object("_User");
+
     user.set("username", request.params.username);
     user.set("password", request.params.password);
     user.set("email", request.params.email);
     user.set("name", request.params.name);
 
     return user.signUp()
+      .then(function(user) {
+        return user;
+      })
       .fail(function(error) {
         return Parse.Promise.error('User could not be created. Error: ' + error.message);
       });
 
   }).then(function(user) {
-    return stripeCustomer = Stripe.Customers.create({
-      email: user.attributes.email,
+    return Stripe.Customers.create({
+      email: user.get("email"),
       metadata: {
         parseUserId: user.id
       }
@@ -42,10 +46,20 @@ Parse.Cloud.define("User__create", function(request, response) {
 
   }).then(function(results) {
     var user = results.user;
-    user.set("stripeCustomerId", results.stripeCustomer.id);
-    user.save().then(function(user) {
-      response.success(user);
-    });
+    var stripeCustomer = results.stripeCustomer;
+    var billing = new Parse.Object("Billing");
+
+    billing.set("stripeCustomerId", stripeCustomer.id)
+
+    user.set("billing", billing);
+
+    user.save()
+      .then(function(user) {
+        response.success(user);
+      })
+      .fail(function(error) {
+        return Parse.Promise.error("User could not be updated. Error: " + error.message);
+      })
 
   }, function(error) {
     response.error(error);
@@ -68,31 +82,35 @@ Parse.Cloud.define("User__addCardToken", function(request, response) {
     }
 
   }).then(function() {
-    var data = {
-      source: token
-    };
+    var billing = user.get("billing");
+    return billing.fetch();
 
-    return Stripe.Customers.update(user.get("stripeCustomerId"), data)
+  }).then(function(billing) {
+    var data = { source: token };
+    return Stripe.Customers.update(billing.get("stripeCustomerId"), data)
       .then(function(customer) {
-        return customer;
+        return { billing: billing, customer: customer };
       })
       .fail(function(error) {
         return Parse.Promise.error("Stripe customer could not be updated. Error: " + error);
       });
 
-  }).then(function(customer) {
-    var source = customer.sources.data[0];
+  }).then(function(result) {
+    var source = result.customer.sources.data[0];
+    var billing = result.billing;
 
-    user.set("billingBrand", source.brand);
-    user.set("billingLast4", source.last4);
+    billing.set("brand", source.brand);
+    billing.set("last4", source.last4);
+    billing.set("expMonth", source.exp_month);
+    billing.set("expYear", source.exp_year);
 
-    user.save()
-      .then(function(user) {
-        response.success(user);
-      })
+    return billing.save()
       .fail(function(error) {
-        return Parse.Promise.error("User could not be updated with card info. Error: " + error);
+        return Parse.Promise.error("User could not be updated with card info. Error: " + error.message);
       });
+
+  }).then(function(billing) {
+    response.success(billing);
 
   }, function(error) {
     response.error(error);
