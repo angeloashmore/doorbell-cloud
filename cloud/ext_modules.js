@@ -1,3 +1,5 @@
 const Stripe = require('stripe');
-Stripe.initialize("sk_test_QSGWG4k2CfgfD10hXdWVdOXc");
+const config = require('cloud/config');
+
+Stripe.initialize(config.STRIPE_PUBLISHABLE_KEY);
 exports.Stripe = Stripe;

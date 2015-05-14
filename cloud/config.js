@@ -1,0 +1,1 @@
+exports.STRIPE_PUBLISHABLE_KEY = "sk_test_QSGWG4k2CfgfD10hXdWVdOXc";
