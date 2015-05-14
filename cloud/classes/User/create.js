@@ -4,8 +4,7 @@ Parse.Cloud.define("User__create", function(request, response) {
   var user;
 
   Parse.Promise.as().then(function() {
-    user = new Parse.Object(Parse.User);
-
+    user = new Parse.User;
     user.set("username", request.params.username);
     user.set("password", request.params.password);
     user.set("email", request.params.email);
@@ -33,7 +32,7 @@ Parse.Cloud.define("User__create", function(request, response) {
 
     user.set("billing", billing);
 
-    user.save()
+    return user.save()
       .fail(function(error) {
         return Parse.Promise.error("User could not be updated. Error: " + error.message);
       })
