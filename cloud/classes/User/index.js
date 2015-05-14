@@ -1,7 +1,7 @@
 var methods = [
+  "_afterSave",
   "_beforeSave",
   "addCardToken",
-  "create",
   "subscribeTo"
 ];
 
