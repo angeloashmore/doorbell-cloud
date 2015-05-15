@@ -1,9 +1,7 @@
 const Stripe = require('cloud/ext_modules').Stripe;
 
 Parse.Cloud.afterSave(Parse.User, function(request) {
-  if (!request.object.existed()) {
-    createBilling(request.object);
-  }
+  if (!request.object.existed()) createBilling(request.object);
 });
 
 function createBilling(user) {
