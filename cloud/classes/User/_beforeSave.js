@@ -3,8 +3,12 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
     return response.error("email is required");
   }
 
-  if (!request.object.get("name")) {
-    return response.error("name is required");
+  if (!request.object.get("firstName")) {
+    return response.error("firstName is required");
+  }
+
+  if (!request.object.get("lastName")) {
+    return response.error("lastName is required");
   }
 
   response.success();
