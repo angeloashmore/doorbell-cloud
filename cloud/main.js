@@ -1,9 +1,9 @@
 var fs = require("fs");
-var layer = require("cloud/layer-parse-module/layer-module");
+var layer = require("cloud/lib/layer-parse-module/layer-module");
 
 var layerProviderID = "c85e93d6-d1de-11e4-8b48-e08ce8001374";
 var layerKeyID = "ad387876-ff54-11e4-9401-8b63d7001a47";
-var privateKey = fs.readFileSync("cloud/layer-parse-module/keys/layer-key.js");
+var privateKey = fs.readFileSync("cloud/lib/layer-parse-module/keys/layer-key.js");
 layer.initialize(layerProviderID, layerKeyID, privateKey);
 
 Parse.Cloud.define("generateToken", function(request, response) {
@@ -15,7 +15,14 @@ Parse.Cloud.define("generateToken", function(request, response) {
 });
 
 var parseClasses = [
-  "User"
+  "_Role",
+  "_User",
+  "Billing",
+  "Event",
+  "EventInvitation",
+  "Organization",
+  "Plan",
+  "Profile"
 ]
 
 parseClasses.forEach(function(parseClass) {

@@ -6,5 +6,5 @@ var methods = [
 ];
 
 methods.forEach(function(method) {
-  require("cloud/classes/User/" + method);
+  require("cloud/classes/_User/" + method);
 });
