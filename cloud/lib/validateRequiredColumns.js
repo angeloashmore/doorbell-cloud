@@ -1,6 +1,6 @@
 function validateRequiredColumns(object, requiredColumns) {
   return Parse.Promise.as().then(function() {
-    for (let columnName in requiredColumns) {
+    for (var columnName in requiredColumns) {
       if (!object.get(columnName)) {
         if (requiredColumns[columnName]) {
           user.set(columnName, requiredColumns[columnName]);
