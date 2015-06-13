@@ -1,14 +1,14 @@
 {
-    "applications": {
-        "Sample App": {
-            "applicationId": "DJlID2KyyrJHkOCqrqUmnmZt1lfuYJLFZ5gcuXeq", 
-            "masterKey": "i14lF5IFPcyb6ivDiyQ6hbj5t8Yd0EoH1ZA0sa8I"
-        },
-        "_default": {
-            "link": "Sample App"
-        }
+  "global": {
+    "parseVersion": "1.4.2"
+  },
+  "applications": {
+    "Doorbell": {
+      "applicationId": "ePrkeRlmdOHOzi5oF9g2QBr5JYu0igBXITvJfaCT",
+      "masterKey": "tUY7d6YMIZlCeJPUKZyQVAeP0kre1JLjLjyMnVu0"
     },
-    "global": {
-        "parseVersion": "1.4.2"
+    "_default": {
+      "link": "Doorbell"
     }
+  }
 }
