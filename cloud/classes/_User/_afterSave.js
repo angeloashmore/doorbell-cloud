@@ -21,13 +21,17 @@ function createBilling(user) {
 
   }).then(function(stripeCustomer) {
     var billing = new Parse.Object("Billing");
-    billing.set("stripeCustomerId", stripeCustomer.id)
 
-    user.set("billing", billing);
+    billing.set("relationship", {
+      "__type": "Pointer",
+      "className": "User",
+      "objectId": user.id
+    });
+    billing.set("stripeCustomerId", stripeCustomer.id);
 
-    user.save()
+    billing.save()
       .fail(function(error) {
-        return Parse.Promise.error("User could not be updated. Error: " + error.message);
+        return Parse.Promise.error("Billing could not be saved. Error: " + error);
       });
 
   }, function(error) {

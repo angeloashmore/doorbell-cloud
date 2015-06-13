@@ -2,11 +2,7 @@ const validateRequiredColumns = require("cloud/lib/validateRequiredColumns");
 
 const RequiredColumns = {
   "relationship": null,
-  "plan": null,
-  "brand": null,
-  "last4": null,
-  "expMonth": null,
-  "expYear": null
+  "stripeCustomerId": null
 };
 
 Parse.Cloud.beforeSave("Billing", function(request, response) {
