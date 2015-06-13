@@ -1,1 +1,4 @@
 exports.STRIPE_PUBLISHABLE_KEY = "sk_test_QSGWG4k2CfgfD10hXdWVdOXc";
+
+exports.LAYER_PROVIDER_ID = "c85e93d6-d1de-11e4-8b48-e08ce8001374";
+exports.LAYER_KEY_ID = "ad387876-ff54-11e4-9401-8b63d7001a47";

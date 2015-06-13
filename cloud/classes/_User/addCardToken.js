@@ -1,4 +1,4 @@
-const Stripe = require('cloud/ext_modules').Stripe;
+const Stripe = require('cloud/lib/stripe');
 
 Parse.Cloud.define("User__addCardToken", function(request, response) {
   var user = request.user;
