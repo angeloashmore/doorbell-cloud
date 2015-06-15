@@ -7,7 +7,7 @@ const RequiredColumns = {
 };
 
 Parse.Cloud.beforeSave("EventInvitation", function(request, response) {
-  verifyRequiredColumns(request.object, RequiredColumns).then(function() {
+  validateRequiredColumns(request.object, RequiredColumns).then(function() {
     response.success();
   }, function(error) {
     response.error(error);
