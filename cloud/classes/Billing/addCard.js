@@ -24,7 +24,10 @@ Parse.Cloud.define("Billing__addCard", function(request, response) {
 
   }).then(function() {
     var query = Parse.Query("Billing");
-    return query.get(id);
+    return query.get(id)
+      .fail(function(error) {
+        return Parse.Promise.error("Billing could not be found. Error:" + error);
+      });
 
   }).then(function(_billing) {
     billing = _billing;
@@ -45,13 +48,13 @@ Parse.Cloud.define("Billing__addCard", function(request, response) {
 
     return billing.save()
       .fail(function(error) {
-        return Parse.Promise.error("User could not be updated with card info. Error: " + error.message);
+        return Parse.Promise.error("Billing could not be updated with card info. Error: " + error.message);
       });
 
   }).then(function() {
-    response.success(user);
+    response.success(billing);
 
   }, function(error) {
-    response.error(error);
+    response.error(billing);
   });
 });

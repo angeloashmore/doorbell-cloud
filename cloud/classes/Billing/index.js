@@ -1,7 +1,7 @@
 var methods = [
   "_beforeSave",
   "addCard",
-  "subscribeTo"
+  "subscribeToPlan"
 ];
 
 methods.forEach(function(method) {

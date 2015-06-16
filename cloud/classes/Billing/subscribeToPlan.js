@@ -1,7 +1,9 @@
 const Stripe = require('cloud/lib/stripe');
 
-Parse.Cloud.define("User__subscribeTo", function(request, response) {
+Parse.Cloud.define("Billing__subscribeToPlan", function(request, response) {
   var user = request.user;
+  var id = request.params.id;
+  var planId = request.params.planId;
   var plan, billing;
 
   Parse.Promise.as().then(function() {
@@ -15,23 +17,23 @@ Parse.Cloud.define("User__subscribeTo", function(request, response) {
     }
 
   }).then(function() {
-    var Plan = Parse.Object.extend("Plan");
-    var query = new Parse.Query(Plan);
-    return query.get(request.params.planId)
+    var query = new Parse.Query("Billing");
+    return query.get(id)
+      .fail(function(error) {
+        return Parse.Promise.error("Billing could not be found. Error:" + error);
+      });
+
+  }).then(function(_billing) {
+    billing = _billing;
+
+    var query = new Parse.Query("Plan");
+    return query.get(planId)
       .fail(function(error) {
         return Parse.Promise.error("Plan could not be found. Error:" + error);
       });
 
   }).then(function(_plan) {
     plan = _plan;
-
-    return request.user.get("billing").fetch()
-      .fail(function(error) {
-        return Parse.Promise.error("Billing info could not be found. Error:" + error);
-      });
-
-  }).then(function(_billing) {
-    billing = _billing;
 
     var stripeCustomerId = billing.get("stripeCustomerId");
     var data = {
@@ -44,15 +46,15 @@ Parse.Cloud.define("User__subscribeTo", function(request, response) {
       });
 
   }).then(function(subscription) {
-    user.set("plan", plan);
+    billing.set("plan", plan);
 
-    return user.save()
+    return billing.save()
       .fail(function(error) {
-        return Parse.Promise.error("User could not be updated. Error:" + error);
+        return Parse.Promise.error("Billing could not be updated. Error:" + error);
       });
 
-  }).then(function(user) {
-    response.success(user);
+  }).then(function(billing) {
+    response.success(billing);
 
   }, function(error) {
     response.error(error);

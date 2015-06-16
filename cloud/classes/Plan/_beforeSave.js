@@ -1,7 +1,7 @@
 const validateRequiredColumns = require("cloud/lib/validateRequiredColumns");
 
 const RequiredColumns = {
-  "stripeId": null,
+  "stripePlanId": null,
   "type": null
 };
 
