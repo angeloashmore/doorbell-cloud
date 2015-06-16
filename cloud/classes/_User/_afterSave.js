@@ -9,17 +9,17 @@ Parse.Cloud.afterSave(Parse.User, function(request) {
 function createBilling(user) {
   Parse.Cloud.useMasterKey();
 
-  return Parse.Promise.as().then(function() {
+  Parse.Promise.as().then(function() {
     var billing = new Parse.Object("Billing");
 
-    billing.set("email", user.email);
-    billing.set("relationship", {
+    billing.set("email", user.get("email"));
+    billing.set("relation", {
       "__type": "Pointer",
-      "className": "User",
+      "className": "_User",
       "objectId": user.id
     });
 
-    return billing.save()
+    billing.save()
       .fail(function(error) {
         return Parse.Promise.error("Billing could not be saved. Error: " + error);
       });

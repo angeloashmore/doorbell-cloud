@@ -1,4 +1,5 @@
 var methods = [
+  "_afterSave",
   "_beforeSave",
   "addCard",
   "subscribeToPlan"
