@@ -1,13 +1,20 @@
 const Stripe = require('cloud/lib/stripe');
 
-Parse.Cloud.define("User__addCardToken", function(request, response) {
+Parse.Cloud.define("Billing__addCard", function(request, response) {
   var user = request.user;
+  var id = request.params.id;
   var token = request.params.token;
+  var billing;
 
   Parse.Promise.as().then(function() {
     // Check if a user was logged in.
     if (!user) {
       return Parse.Promise.error("User is not logged in");
+    }
+
+    // Check if a Billing id was provided.
+    if (!id) {
+      return Parse.Promise.error("Billing id was not provided");
     }
 
     // Check if a Stripe token was provided.
@@ -16,22 +23,20 @@ Parse.Cloud.define("User__addCardToken", function(request, response) {
     }
 
   }).then(function() {
-    var billing = user.get("billing");
-    return billing.fetch();
+    var query = Parse.Query("Billing");
+    return query.get(id);
 
-  }).then(function(billing) {
+  }).then(function(_billing) {
+    billing = _billing;
+
     var data = { source: token };
     return Stripe.Customers.update(billing.get("stripeCustomerId"), data)
-      .then(function(customer) {
-        return { billing: billing, customer: customer };
-      })
       .fail(function(error) {
         return Parse.Promise.error("Stripe customer could not be updated. Error: " + error);
       });
 
-  }).then(function(result) {
-    var source = result.customer.sources.data[0];
-    var billing = result.billing;
+  }).then(function(customer) {
+    var source = customer.sources.data[0];
 
     billing.set("brand", source.brand);
     billing.set("last4", source.last4);

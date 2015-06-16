@@ -1,8 +1,6 @@
 var methods = [
   "_afterSave",
-  "_beforeSave",
-  "addCardToken",
-  "subscribeTo"
+  "_beforeSave"
 ];
 
 methods.forEach(function(method) {
