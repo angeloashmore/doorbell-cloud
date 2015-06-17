@@ -5,7 +5,9 @@ const RequiredColumns = {
 };
 
 Parse.Cloud.beforeSave("Role", function(request, response) {
-  validateRequiredColumns(request.object, RequiredColumns).then(function() {
+  const role = request.object;
+
+  validateRequiredColumns(role, RequiredColumns).then(function() {
     response.success();
   }, function(error) {
     response.error(error);

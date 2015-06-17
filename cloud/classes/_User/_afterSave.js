@@ -1,15 +1,15 @@
 const Stripe = require('cloud/lib/stripe');
 
 Parse.Cloud.afterSave(Parse.User, function(request) {
-  var user = request.object;
+  const user = request.object;
 
-  if (!user.existed()) {
-    setACL(user);
-    createBilling(user);
-  }
+  setACL(user);
+  createBilling(user);
 });
 
 function setACL(user) {
+  if (user.existed()) return;
+
   Parse.Cloud.useMasterKey();
 
   const acl = new Parse.ACL(user);
@@ -17,6 +17,8 @@ function setACL(user) {
 }
 
 function createBilling(user) {
+  if (user.existed()) return;
+
   Parse.Cloud.useMasterKey();
 
   return Parse.Promise.as().then(function() {
@@ -28,7 +30,7 @@ function createBilling(user) {
         return Parse.Promise.error("Billing could not be saved. Error: " + error);
       });
 
-  }, function(error) {
+  }).fail(function(error) {
     console.error(error);
   });
 }
