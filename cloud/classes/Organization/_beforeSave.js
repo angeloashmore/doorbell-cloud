@@ -2,6 +2,7 @@ const validateRequiredColumns = require("cloud/lib/validateRequiredColumns");
 
 const RequiredColumns = {
   "name": null,
+  "email": null,
   "users": null
 };
 
