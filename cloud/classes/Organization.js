@@ -1,8 +1,19 @@
 const Errors = require("cloud/errors/index");
 const Billing = require("cloud/classes/Billing");
+const validateRequiredAttrs = require("cloud/lib/validateRequiredAttrs");
 
 const Organization = Parse.Object.extend("Organization", {
   // Instance methods
+  requiredAttrs: [
+    "name",
+    "email"
+  ],
+
+  validate: function(attrs, options) {
+    if (attrs === undefined) attrs = this;
+    return validateRequiredAttrs(this.requiredAttrs, attrs);
+  },
+
   defaultACL: function() {
     const acl = new Parse.ACL();
     acl.setRoleReadAccess(this.roleNameForType(Organization.RoleTypes.Member), true);
@@ -10,8 +21,25 @@ const Organization = Parse.Object.extend("Organization", {
     return acl;
   },
 
+  addUser: function(user, type) {
+    Parse.Cloud.useMasterKey();
+
+    const this_ = this;
+    return this.findRoleForType(type).then(function(role) {
+      role.getUsers().add(user);
+      role.save();
+
+    }).then(function() {
+      const profile = new Parse.Object("Profile");
+      profile.set("user", user);
+      profile.set("organization", this_);
+      return profile.save();
+
+    });
+  },
+
   findRoleForType: function(type) {
-    const query = Parse.Query(Parse.Role);
+    const query = new Parse.Query(Parse.Role);
     query.equalTo("name", this.roleNameForType(type));
     return query.first();
   },
@@ -21,8 +49,6 @@ const Organization = Parse.Object.extend("Organization", {
   },
 
   createRoles: function() {
-    if (this.existed()) throw new Errors.OnlyNewObjects();
-
     Parse.Cloud.useMasterKey();
 
     const roles = {};
@@ -49,8 +75,6 @@ const Organization = Parse.Object.extend("Organization", {
   },
 
   createBilling: function() {
-    if (this.existed()) throw new Errors.OnlyNewObjects();
-
     Parse.Cloud.useMasterKey();
 
     const billing = new Billing();

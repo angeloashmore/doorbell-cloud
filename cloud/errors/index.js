@@ -1,5 +1,6 @@
 const errors = [
-  "OnlyForNewObjects"
+  "OnlyNewObjects",
+  "RequiredAttrMissing"
 ];
 
 errors.forEach(function(error) {
