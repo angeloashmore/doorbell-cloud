@@ -1,5 +1,4 @@
 const Stripe = require("cloud/lib/Stripe");
-const Errors = require("cloud/errors/index");
 const OrganizationRoleTypes = require("cloud/classes/OrganizationRoleTypes");
 const validateRequiredAttrs = require("cloud/lib/validateRequiredAttrs");
 

@@ -1,17 +1,7 @@
-const validateRequiredColumns = require("cloud/lib/validateRequiredColumns");
+const Profile = require("cloud/classes/Profile");
 
-const RequiredColumns = {
-  "user": null,
-  "organization": null,
-  "private": false
-};
-
-Parse.Cloud.beforeSave("Profile", function(request, response) {
+Parse.Cloud.beforeSave(Profile, function(request, response) {
   const profile = request.object;
 
-  validateRequiredColumns(profile, RequiredColumns).then(function() {
-    response.success();
-  }, function(error) {
-    response.error(error);
-  });
+  response.success();
 });

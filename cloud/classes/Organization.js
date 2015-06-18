@@ -1,4 +1,3 @@
-const Errors = require("cloud/errors/index");
 const Billing = require("cloud/classes/Billing");
 const validateRequiredAttrs = require("cloud/lib/validateRequiredAttrs");
 
