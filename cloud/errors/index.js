@@ -1,4 +1,5 @@
 const errors = [
+  "InvalidAttrValue",
   "OnlyNewObjects",
   "RequiredAttrMissing"
 ];
