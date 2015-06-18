@@ -1,5 +1,6 @@
 var methods = [
-  "_beforeSave",
+  "_afterSave",
+  "_beforeSave"
 ];
 
 methods.forEach(function(method) {

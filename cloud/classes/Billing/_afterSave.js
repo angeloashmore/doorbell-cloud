@@ -13,23 +13,31 @@ function setACL(billing) {
 
   Parse.Cloud.useMasterKey();
 
-  if (!!billing.get("user")) {
-    const acl = new Parse.ACL(billing.get("user"));
-    billing.setACL(acl);
-
-  } else if (!!billing.get("organization")) {
+  return Parse.Promise.as().then(function() {
+    const user = billing.get("user");
     const organization = billing.get("organization");
-    const roleName = organizationRoleName(organization, "billing");
 
-    const query = new Parse.Query(Parse.Role);
-    query.equalTo("name", roleName);
-    query.first().then(function(billingRole) {
-      const acl = new Parse.ACL();
-      acl.setReadAccess(billingRole, true);
-      acl.setWriteAccess(billingRole, true);
+    if (!!user) {
+      const acl = new Parse.ACL(user);
       billing.setACL(acl);
-    });
-  }
+      return billing.save();
+
+    } else if (!!organization) {
+      const roleName = organizationRoleName(organization, "billing");
+      const query = new Parse.Query(Parse.Role);
+      query.equalTo("name", roleName);
+      return query.first().then(function(billingRole) {
+        const acl = new Parse.ACL();
+        acl.setReadAccess(billingRole, true);
+        acl.setWriteAccess(billingRole, true);
+        billing.setACL(acl);
+        return billing.save();
+      });
+    }
+
+  }, function(error) {
+    console.error(error);
+  });
 }
 
 function createAndSetStripeCustomer(billing) {

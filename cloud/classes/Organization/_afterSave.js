@@ -4,17 +4,16 @@ const organizationRoleName = require('cloud/lib/organizationRoleName');
 Parse.Cloud.afterSave("Organization", function(request) {
   const user = request.user;
   const organization = request.object;
-  var roles;
 
-  createRoles(organization).then(function(_roles) {
-    roles = _roles;
+  createRoles(organization).then(function(roles) {
     setACL(organization, roles);
+    return roles;
 
-  }).then(function() {
+  }).then(function(roles) {
     setRoleACLs(organization, roles);
     setRoleHierachy(organization, roles);
     createBilling(organization);
-    addCallingUserToOwnerRole(organization, roles, user);
+    configureCallingUser(organization, roles, user);
 
   }, function(error) {
     console.error(error);
@@ -23,7 +22,6 @@ Parse.Cloud.afterSave("Organization", function(request) {
 
 function createRoles(organization) {
   if (organization.existed()) {
-    console.log(organization.toJSON());
     return Parse.Promise.error("Organization already existed");
   }
 
@@ -84,6 +82,9 @@ function setACL(organization, roles) {
 
     organization.setACL(acl);
     return organization.save();
+
+  }, function(error) {
+    console.error(error);
   });
 }
 
@@ -159,11 +160,22 @@ function createBilling(organization) {
   });
 }
 
-function addCallingUserToOwnerRole(organization, roles, user) {
+function configureCallingUser(organization, roles, user) {
   if (organization.existed()) return;
 
   Parse.Cloud.useMasterKey();
 
-  roles.owner.getUsers().add(user);
-  return roles.owner.save();
+  return Parse.Promise.as().then(function() {
+    roles.owner.getUsers().add(user);
+    return roles.owner.save();
+
+  }).then(function() {
+    const profile = new Parse.Object("Profile");
+    profile.set("user", user);
+    profile.set("organization", organization);
+    return profile.save();
+
+  }, function(error) {
+    console.error(error);
+  });
 }
