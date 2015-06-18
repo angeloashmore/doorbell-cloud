@@ -10,7 +10,7 @@ const Plan = Parse.Object.extend("Plan", {
 
   validate: function(attrs, options) {
     if (["user", "organization"].indexOf(this.get("type")) < 0) {
-      return new Errors.InvalidAttrValue("type");
+      throw new Errors.InvalidAttrValue("type");
     }
 
     return validateRequiredAttrs(this.requiredAttrs, attrs);

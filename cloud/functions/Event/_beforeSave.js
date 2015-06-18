@@ -1,15 +1,7 @@
-const validateRequiredColumns = require("cloud/lib/validateRequiredColumns");
+const Event = require("cloud/classes/Event");
 
-const RequiredColumns = {
-  "user": null,
-  "location": null,
-  "description": null
-};
+Parse.Cloud.beforeSave(Event, function(request, response) {
+  const event = request.object;
 
-Parse.Cloud.beforeSave("Event", function(request, response) {
-  validateRequiredColumns(request.object, RequiredColumns).then(function() {
-    response.success();
-  }, function(error) {
-    response.error(error);
-  });
+  response.success();
 });
