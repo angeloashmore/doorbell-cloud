@@ -1,21 +1,15 @@
-var definitions = {
-  "classes": [
-    "_Role",
-    "_User",
-    "Billing",
-    "Event",
-    "EventInvitation",
-    "Organization",
-    "Plan",
-    "Profile"
-  ],
-  "functions": [
-    "Layer"
-  ]
-}
+var definitions = [
+  "_Role",
+  "_User",
+  "Billing",
+  "Event",
+  "EventInvitation",
+  "Layer",
+  "Organization",
+  "Plan",
+  "Profile"
+]
 
-for (var type in definitions) {
-  definitions[type].forEach(function(namespace) {
-    require(["cloud", type, namespace, "index"].join("/"));
-  });
-}
+definitions.forEach(function(namespace) {
+  require(["cloud", "functions", namespace, "index"].join("/"));
+});

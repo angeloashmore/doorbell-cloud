@@ -4,5 +4,5 @@ var methods = [
 ];
 
 methods.forEach(function(method) {
-  require("cloud/classes/Organization/" + method);
+  require("cloud/functions/Profile/" + method);
 });
