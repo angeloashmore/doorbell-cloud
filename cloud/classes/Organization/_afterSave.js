@@ -32,6 +32,7 @@ function createRoles(organization) {
   return Parse.Promise.as().then(function() {
     const name = organizationRoleName(organization, "owner");
     const role = new Parse.Role(name, new Parse.ACL());
+    role.set("organization", organization);
     return role.save()
       .then(function(role) {
         roles.owner = role;
@@ -40,6 +41,7 @@ function createRoles(organization) {
   }).then(function() {
     const name = organizationRoleName(organization, "admin");
     const role = new Parse.Role(name, new Parse.ACL());
+    role.set("organization", organization);
     return role.save()
       .then(function(role) {
         roles.admin = role;
@@ -48,6 +50,7 @@ function createRoles(organization) {
   }).then(function() {
     const name = organizationRoleName(organization, "billing");
     const role = new Parse.Role(name, new Parse.ACL());
+    role.set("organization", organization);
     return role.save()
       .then(function(role) {
         roles.billing = role;
@@ -56,6 +59,7 @@ function createRoles(organization) {
   }).then(function() {
     const name = organizationRoleName(organization, "member");
     const role = new Parse.Role(name, new Parse.ACL());
+    role.set("organization", organization);
     return role.save()
       .then(function(role) {
         roles.member = role;
@@ -147,9 +151,15 @@ function createBilling(organization) {
   Parse.Cloud.useMasterKey();
 
   return Parse.Promise.as().then(function() {
+    const query = new Parse.Query("Plan");
+    query.equalTo("stripePlanId", "ORGANIZATION__FREE");
+    return query.first();
+
+  }).then(function(freePlan) {
     const billing = new Parse.Object("Billing");
     billing.set("email", organization.get("email"));
     billing.set("organization", organization);
+    billing.set("plan", freePlan);
     return billing.save()
       .fail(function(error) {
         return Parse.Promise.error("Billing could not be saved. Error: " + error);

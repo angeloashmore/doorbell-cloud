@@ -6,13 +6,15 @@ const RequiredColumns = {
 };
 
 Parse.Cloud.beforeSave("Plan", function(request, response) {
+  const plan = request.object;
+
   validateRequiredColumns(request.object, RequiredColumns).then(function() {
     response.success();
   }, function(error) {
     response.error(error);
   });
 
-  if (!["user", "organization"].includes(request.object.get("type"))) {
+  if (["user", "organization"].indexOf(plan.get("type")) < 0) {
     throw new Error("Column `type` must be either \"user\" or \"organization\".")
   }
 });
