@@ -1,3 +1,4 @@
+const Enums = require("cloud/enums/Enums");
 const Errors = require("cloud/errors/index");
 const validateRequiredAttrs = require("cloud/lib/validateRequiredAttrs");
 
@@ -23,25 +24,20 @@ const Plan = Parse.Object.extend("Plan", {
     User: "user"
   }),
 
+  fetchWithStripeId: function(id) {
+    const query = new Parse.Query(Plan);
+    query.equalTo("stripePlanId", id);
+    return query.first();
+  },
+
   fetchDefaultPlanForType: function(type) {
-    var planName;
-
-    switch (type) {
-      case Plan.Types.Organization:
-        planName = "ORGANIZATION__FREE";
-        break;
-
-      case Plan.Types.User:
-        planName = "USER__FREE";
-        break;
-
-      default:
-        throw new TypeError("Argument 'type' was an invalid value");
+    if (type == Enums.BillingTypes.Organization) {
+      return Plan.fetchWithStripeId("ORGANIZATION__FREE");
+    } else if (type == Enums.BillingTypes.User) {
+      return Plan.fetchWithStripeId("USER__FREE");
     }
 
-    const query = new Parse.Query(Plan);
-    query.equalTo("stripePlanId", planName);
-    return query.first();
+    throw new TypeError("Argument 'type' was an invalid value");
   }
 });
 

@@ -1,6 +1,6 @@
 const Stripe = require("cloud/lib/Stripe");
 const Plan = require("cloud/classes/Plan");
-const OrganizationRoleTypes = require("cloud/classes/OrganizationRoleTypes");
+const Enums = require("cloud/enums/Enums");
 const validateRequiredAttrs = require("cloud/lib/validateRequiredAttrs");
 
 const Billing = Parse.Object.extend("Billing", {
@@ -24,8 +24,8 @@ const Billing = Parse.Object.extend("Billing", {
       acl.setReadAccess(user, true);
       acl.setWriteAccess(user, true);
     } else if (!!organization) {
-      acl.setRoleReadAccess(organization.roleNameForType(OrganizationRoleTypes.Billing), true);
-      acl.setRoleWriteAccess(organization.roleNameForType(OrganizationRoleTypes.Billing), true);
+      acl.setRoleReadAccess(organization.roleNameForType(Enums.RoleTypes.Billing), true);
+      acl.setRoleWriteAccess(organization.roleNameForType(Enums.RoleTypes.Billing), true);
     }
 
     this.setACL(acl);
@@ -34,9 +34,9 @@ const Billing = Parse.Object.extend("Billing", {
 
   type: function() {
     if (!!this.get("user")) {
-      return Billing.Types.User;
+      return Enums.BillingTypes.User;
     } else if (!!this.get("organization")) {
-      return Billing.Types.Organization;
+      return Enums.BillingTypes.Organization;
     }
 
     throw new Error("Could not determine type");
@@ -72,10 +72,6 @@ const Billing = Parse.Object.extend("Billing", {
 
 }, {
   // Class methods
-  Types: Object.freeze({
-    Organization: "organization",
-    User: "user"
-  })
 });
 
 module.exports = Billing;

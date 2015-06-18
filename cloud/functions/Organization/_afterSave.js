@@ -1,3 +1,4 @@
+const Enums = require("cloud/enums/Enums");
 const Organization = require("cloud/classes/Organization");
 
 Parse.Cloud.afterSave(Organization, function(request) {
@@ -9,7 +10,7 @@ Parse.Cloud.afterSave(Organization, function(request) {
       .then(function() {
         organization.configureDefaultACL();
         organization.createBilling();
-        organization.addUser(user, Organization.RoleTypes.Owner);
+        organization.addUser(user, Enums.RoleTypes.Owner);
       }, function(error) {
         console.error(error);
       });

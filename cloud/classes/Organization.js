@@ -1,3 +1,4 @@
+const Enums = require("cloud/enums/Enums");
 const Billing = require("cloud/classes/Billing");
 const validateRequiredAttrs = require("cloud/lib/validateRequiredAttrs");
 
@@ -16,8 +17,8 @@ const Organization = Parse.Object.extend("Organization", {
     Parse.Cloud.useMasterKey();
 
     const acl = new Parse.ACL();
-    acl.setRoleReadAccess(this.roleNameForType(Organization.RoleTypes.Member), true);
-    acl.setRoleWriteAccess(this.roleNameForType(Organization.RoleTypes.Owner), true);
+    acl.setRoleReadAccess(this.roleNameForType(Enums.RoleTypes.Member), true);
+    acl.setRoleWriteAccess(this.roleNameForType(Enums.RoleTypes.Owner), true);
     this.setACL(acl);
     return this.save();
   },
@@ -56,24 +57,24 @@ const Organization = Parse.Object.extend("Organization", {
 
     const roles = {};
 
-    for (key in Organization.RoleTypes) {
-      var type = Organization.RoleTypes[key];
+    for (key in Enums.RoleTypes) {
+      var type = Enums.RoleTypes[key];
       roles[type] = this._newRoleForType(type);
     }
 
     const rolesArray = Object.keys(roles).map(function(key) { return roles[key]; });
     return Parse.Object.saveAll(rolesArray)
       .then(function() {
-        roles[Organization.RoleTypes.Owner].getRoles().add([
-          roles[Organization.RoleTypes.Admin],
-          roles[Organization.RoleTypes.Billing]
+        roles[Enums.RoleTypes.Owner].getRoles().add([
+          roles[Enums.RoleTypes.Admin],
+          roles[Enums.RoleTypes.Billing]
         ]);
-        roles[Organization.RoleTypes.Owner].save();
+        roles[Enums.RoleTypes.Owner].save();
 
-        roles[Organization.RoleTypes.Admin].getRoles().add([
-          roles[Organization.RoleTypes.Member]
+        roles[Enums.RoleTypes.Admin].getRoles().add([
+          roles[Enums.RoleTypes.Member]
         ]);
-        roles[Organization.RoleTypes.Admin].save();
+        roles[Enums.RoleTypes.Admin].save();
       });
   },
 
@@ -100,20 +101,20 @@ const Organization = Parse.Object.extend("Organization", {
     const acl = new Parse.ACL();
 
     switch (type) {
-      case Organization.RoleTypes.Billing:
-        acl.setRoleReadAccess(this.roleNameForType(Organization.RoleTypes.Member), true);
-        acl.setRoleReadAccess(this.roleNameForType(Organization.RoleTypes.Billing), true);
-        acl.setRoleWriteAccess(this.roleNameForType(Organization.RoleTypes.Owner), true);
+      case Enums.RoleTypes.Billing:
+        acl.setRoleReadAccess(this.roleNameForType(Enums.RoleTypes.Member), true);
+        acl.setRoleReadAccess(this.roleNameForType(Enums.RoleTypes.Billing), true);
+        acl.setRoleWriteAccess(this.roleNameForType(Enums.RoleTypes.Owner), true);
         break;
 
-      case Organization.RoleTypes.Member:
-        acl.setRoleReadAccess(this.roleNameForType(Organization.RoleTypes.Member), true);
-        acl.setRoleWriteAccess(this.roleNameForType(Organization.RoleTypes.Admin), true);
+      case Enums.RoleTypes.Member:
+        acl.setRoleReadAccess(this.roleNameForType(Enums.RoleTypes.Member), true);
+        acl.setRoleWriteAccess(this.roleNameForType(Enums.RoleTypes.Admin), true);
         break;
 
       default:
-        acl.setRoleReadAccess(this.roleNameForType(Organization.RoleTypes.Member), true);
-        acl.setRoleWriteAccess(this.roleNameForType(Organization.RoleTypes.Owner), true);
+        acl.setRoleReadAccess(this.roleNameForType(Enums.RoleTypes.Member), true);
+        acl.setRoleWriteAccess(this.roleNameForType(Enums.RoleTypes.Owner), true);
         break;
     }
 
@@ -122,12 +123,6 @@ const Organization = Parse.Object.extend("Organization", {
 
 }, {
   // Class methods
-  RoleTypes: Object.freeze({
-    Owner: "owner",
-    Admin: "admin",
-    Billing: "billing",
-    Member: "member"
-  })
 });
 
 module.exports = Organization;
