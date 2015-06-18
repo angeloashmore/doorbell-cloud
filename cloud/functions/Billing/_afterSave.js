@@ -5,6 +5,9 @@ Parse.Cloud.afterSave(Billing, function(request) {
 
   if (!billing.existed()) {
     billing.configureDefaultACL();
-    billing.createStripeCustomer();
+    billing.createStripeCustomer()
+      .then(function() {
+        billing.configureDefaultPlan();
+      });
   }
 });

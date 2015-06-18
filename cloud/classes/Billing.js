@@ -45,6 +45,19 @@ const Billing = Parse.Object.extend("Billing", {
         this_.set("stripeCustomerId", stripeCustomer.id);
         return this_.save();
       });
+  },
+
+  configureDefaultPlan: function() {
+    if (!!this.get("organization")) {
+      const this_ = this;
+      const query = new Parse.Query("Plan");
+      query.equalTo("stripePlanId", "ORGANIZATION__FREE");
+      return query.first()
+        .then(function(plan) {
+          this_.set("plan", plan);
+          return this_.save();
+        });
+    }
   }
 
 }, {
