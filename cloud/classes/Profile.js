@@ -1,4 +1,3 @@
-const OrganizationRoleTypes = require("cloud/classes/OrganizationRoleTypes");
 const validateRequiredAttrs = require("cloud/lib/validateRequiredAttrs");
 
 const Profile = Parse.Object.extend("Profile", {
@@ -18,6 +17,8 @@ const Profile = Parse.Object.extend("Profile", {
   },
 
   configureDefaultACL: function() {
+    Parse.Cloud.useMasterKey();
+
     const user = this.get("user");
     const acl = new Parse.ACL(user);
     this.setACL(acl);

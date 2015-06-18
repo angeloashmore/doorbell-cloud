@@ -13,6 +13,8 @@ const Organization = Parse.Object.extend("Organization", {
   },
 
   configureDefaultACL: function() {
+    Parse.Cloud.useMasterKey();
+
     const acl = new Parse.ACL();
     acl.setRoleReadAccess(this.roleNameForType(Organization.RoleTypes.Member), true);
     acl.setRoleWriteAccess(this.roleNameForType(Organization.RoleTypes.Owner), true);
@@ -30,8 +32,10 @@ const Organization = Parse.Object.extend("Organization", {
 
     }).then(function() {
       const profile = new Parse.Object("Profile");
-      profile.set("user", user);
-      profile.set("organization", this_);
+      profile.set({
+        "user": user,
+        "organization": this_
+      });
       return profile.save();
 
     });

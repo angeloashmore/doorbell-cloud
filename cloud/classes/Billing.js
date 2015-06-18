@@ -13,6 +13,8 @@ const Billing = Parse.Object.extend("Billing", {
   },
 
   configureDefaultACL: function() {
+    Parse.Cloud.useMasterKey();
+
     const user = this.get("user");
     const organization = this.get("organization");
     const acl = new Parse.ACL();
