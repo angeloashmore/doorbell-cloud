@@ -1,4 +1,5 @@
 const Billing = require("cloud/classes/Billing");
+const Plan = require("cloud/classes/Plan");
 
 Parse.Cloud.afterSave(Billing, function(request) {
   var billing = request.object;
@@ -7,7 +8,9 @@ Parse.Cloud.afterSave(Billing, function(request) {
     billing.configureDefaultACL();
     billing.createStripeCustomer()
       .then(function() {
-        billing.configureDefaultPlan();
+        return Plan.fetchDefaultPlanForType(Plan.Types.Organization);
+      }).then(function(plan) {
+        return billing.subscribeToPlan(plan);
       });
   }
 });

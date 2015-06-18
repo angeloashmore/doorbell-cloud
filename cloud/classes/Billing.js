@@ -1,4 +1,5 @@
 const Stripe = require("cloud/lib/Stripe");
+const Plan = require("cloud/classes/Plan");
 const OrganizationRoleTypes = require("cloud/classes/OrganizationRoleTypes");
 const validateRequiredAttrs = require("cloud/lib/validateRequiredAttrs");
 
@@ -47,17 +48,16 @@ const Billing = Parse.Object.extend("Billing", {
       });
   },
 
-  configureDefaultPlan: function() {
-    if (!!this.get("organization")) {
-      const this_ = this;
-      const query = new Parse.Query("Plan");
-      query.equalTo("stripePlanId", "ORGANIZATION__FREE");
-      return query.first()
-        .then(function(plan) {
-          this_.set("plan", plan);
-          return this_.save();
-        });
-    }
+  subscribeToPlan: function(plan) {
+    const stripeCustomerId = this.get("stripeCustomerId");
+    const data = { plan: plan.get("stripePlanId") };
+
+    const this_ = this;
+    return Stripe.Customers.updateSubscription(stripeCustomerId, data)
+      .then(function() {
+        this_.set("plan", plan);
+        return this_.save();
+      });
   }
 
 }, {

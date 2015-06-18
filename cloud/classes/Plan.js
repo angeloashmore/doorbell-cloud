@@ -9,15 +9,38 @@ const Plan = Parse.Object.extend("Plan", {
   ],
 
   validate: function(attrs, options) {
-    if (["user", "organization"].indexOf(this.get("type")) < 0) {
+    if (["user", "organization"].indexOf(attrs["type"]) < 0) {
       throw new Errors.InvalidAttrValues(["type"]);
     }
 
     return validateRequiredAttrs(this.requiredAttrs, attrs);
-  }
+  },
 
 }, {
   // Class methods
+  Types: Object.freeze({
+    Organization: "organization",
+    User: "user"
+  }),
+
+  fetchDefaultPlanForType: function(type) {
+    switch (type) {
+      case Plan.Types.Organization:
+        const planName = "ORGANIZATION__FREE";
+        break;
+
+      case Plan.Types.User:
+        const planName = "USER__FREE";
+        break;
+
+      default:
+        throw new TypeError("Argument 'type' was an invalid value");
+    }
+
+    const query = new Parse.Query(Plan);
+    query.equalTo("name", planName);
+    return query.first();
+  }
 });
 
 module.exports = Plan;
