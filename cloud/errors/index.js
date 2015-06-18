@@ -1,7 +1,7 @@
 const errors = [
-  "InvalidAttrValue",
+  "InvalidAttrValues",
   "OnlyNewObjects",
-  "RequiredAttrMissing"
+  "RequiredAttrsMissing"
 ];
 
 errors.forEach(function(error) {
