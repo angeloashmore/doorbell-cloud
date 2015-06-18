@@ -1,4 +1,3 @@
-const Stripe = require('cloud/lib/stripe');
 const organizationRoleName = require('cloud/lib/organizationRoleName');
 
 Parse.Cloud.afterSave("Profile", function(request) {

@@ -10,15 +10,15 @@ const Organization = Parse.Object.extend("Organization", {
   ],
 
   validate: function(attrs, options) {
-    if (attrs === undefined) attrs = this;
     return validateRequiredAttrs(this.requiredAttrs, attrs);
   },
 
-  defaultACL: function() {
+  configureDefaultACL: function() {
     const acl = new Parse.ACL();
     acl.setRoleReadAccess(this.roleNameForType(Organization.RoleTypes.Member), true);
     acl.setRoleWriteAccess(this.roleNameForType(Organization.RoleTypes.Owner), true);
-    return acl;
+    this.setACL(acl);
+    return this.save();
   },
 
   addUser: function(user, type) {
@@ -78,8 +78,10 @@ const Organization = Parse.Object.extend("Organization", {
     Parse.Cloud.useMasterKey();
 
     const billing = new Billing();
-    billing.set("organization", this);
-    billing.set("email", this.get("email"));
+    billing.set({
+      "organization": this,
+      "email": this.get("email")
+    });
     return billing.save();
   },
 

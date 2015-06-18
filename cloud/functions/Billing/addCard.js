@@ -1,4 +1,4 @@
-const Stripe = require('cloud/lib/stripe');
+const Stripe = require('cloud/lib/Stripe');
 
 Parse.Cloud.define("Billing__addCard", function(request, response) {
   var user = request.user;

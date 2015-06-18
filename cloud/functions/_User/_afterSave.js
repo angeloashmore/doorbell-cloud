@@ -1,4 +1,4 @@
-const Stripe = require('cloud/lib/stripe');
+const Stripe = require('cloud/lib/Stripe');
 
 Parse.Cloud.afterSave(Parse.User, function(request) {
   const user = request.object;
