@@ -8,7 +8,7 @@ Parse.Cloud.afterSave(Billing, function(request) {
     billing.configureDefaultACL();
     billing.createStripeCustomer()
       .then(function() {
-        return Plan.fetchDefaultPlanForType(Plan.Types.Organization);
+        return Plan.fetchDefaultPlanForType(billing.type());
       }).then(function(plan) {
         return billing.subscribeToPlan(plan);
       });

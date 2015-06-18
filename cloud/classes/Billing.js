@@ -32,6 +32,16 @@ const Billing = Parse.Object.extend("Billing", {
     return this.save();
   },
 
+  type: function() {
+    if (!!this.get("user")) {
+      return Billing.Types.User;
+    } else if (!!this.get("organization")) {
+      return Billing.Types.Organization;
+    }
+
+    throw new Error("Could not determine type");
+  },
+
   createStripeCustomer: function() {
     Parse.Cloud.useMasterKey();
 
@@ -62,6 +72,10 @@ const Billing = Parse.Object.extend("Billing", {
 
 }, {
   // Class methods
+  Types: Object.freeze({
+    Organization: "organization",
+    User: "user"
+  })
 });
 
 module.exports = Billing;

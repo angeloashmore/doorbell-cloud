@@ -24,13 +24,15 @@ const Plan = Parse.Object.extend("Plan", {
   }),
 
   fetchDefaultPlanForType: function(type) {
+    var planName;
+
     switch (type) {
       case Plan.Types.Organization:
-        const planName = "ORGANIZATION__FREE";
+        planName = "ORGANIZATION__FREE";
         break;
 
       case Plan.Types.User:
-        const planName = "USER__FREE";
+        planName = "USER__FREE";
         break;
 
       default:
@@ -38,7 +40,7 @@ const Plan = Parse.Object.extend("Plan", {
     }
 
     const query = new Parse.Query(Plan);
-    query.equalTo("name", planName);
+    query.equalTo("stripePlanId", planName);
     return query.first();
   }
 });

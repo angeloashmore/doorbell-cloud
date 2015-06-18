@@ -30,7 +30,7 @@ const User = Parse.Object.extend("_User", {
     const billing = new Billing();
     billing.set({
       "user": this,
-      "email": this.email
+      "email": this.get("email")
     });
     return billing.save();
   }
