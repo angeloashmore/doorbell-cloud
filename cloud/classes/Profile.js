@@ -17,12 +17,10 @@ const Profile = Parse.Object.extend("Profile", {
   },
 
   configureDefaultACL: function() {
-    Parse.Cloud.useMasterKey();
-
     const user = this.get("user");
     const acl = new Parse.ACL(user);
     this.setACL(acl);
-    return this.save();
+    return this.save(null, { useMasterKey: true });
   }
 
 }, {

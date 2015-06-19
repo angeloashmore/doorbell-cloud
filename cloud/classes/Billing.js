@@ -14,8 +14,6 @@ const Billing = Parse.Object.extend("Billing", {
   },
 
   configureDefaultACL: function() {
-    Parse.Cloud.useMasterKey();
-
     const user = this.get("user");
     const organization = this.get("organization");
     const acl = new Parse.ACL();
@@ -29,7 +27,7 @@ const Billing = Parse.Object.extend("Billing", {
     }
 
     this.setACL(acl);
-    return this.save();
+    return this.save(null, { useMasterKey: true });
   },
 
   type: function() {
@@ -43,8 +41,6 @@ const Billing = Parse.Object.extend("Billing", {
   },
 
   createStripeCustomer: function() {
-    Parse.Cloud.useMasterKey();
-
     const data = {
       email: this.get("email"),
       metadata: { parseBillingId: this.id }
@@ -54,7 +50,7 @@ const Billing = Parse.Object.extend("Billing", {
     return Stripe.Customers.create(data)
       .then(function(stripeCustomer) {
         this_.set("stripeCustomerId", stripeCustomer.id);
-        return this_.save();
+        return this_.save(null, { useMasterKey: true });
       });
   },
 

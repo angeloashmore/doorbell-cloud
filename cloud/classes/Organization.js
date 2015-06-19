@@ -1,5 +1,6 @@
 const Enums = require("cloud/enums/Enums");
 const Billing = require("cloud/classes/Billing");
+const Profile = require("cloud/classes/Profile");
 const validateRequiredAttrs = require("cloud/lib/validateRequiredAttrs");
 
 const Organization = Parse.Object.extend("Organization", {
@@ -14,30 +15,26 @@ const Organization = Parse.Object.extend("Organization", {
   },
 
   configureDefaultACL: function() {
-    Parse.Cloud.useMasterKey();
-
     const acl = new Parse.ACL();
     acl.setRoleReadAccess(this.roleNameForType(Enums.RoleTypes.Member), true);
     acl.setRoleWriteAccess(this.roleNameForType(Enums.RoleTypes.Owner), true);
     this.setACL(acl);
-    return this.save();
+    return this.save(null, { useMasterKey: true });
   },
 
   addUser: function(user, type) {
-    Parse.Cloud.useMasterKey();
-
     const this_ = this;
     return this.findRoleForType(type).then(function(role) {
       role.getUsers().add(user);
-      role.save();
+      role.save(null, { useMasterKey: true });
 
     }).then(function() {
-      const profile = new Parse.Object("Profile");
+      const profile = new Parse.Object(Profile);
       profile.set({
         "user": user,
         "organization": this_
       });
-      return profile.save();
+      return profile.save(null, { useMasterKey: true });
 
     });
   },
@@ -53,8 +50,6 @@ const Organization = Parse.Object.extend("Organization", {
   },
 
   createRoles: function() {
-    Parse.Cloud.useMasterKey();
-
     const roles = {};
 
     for (key in Enums.RoleTypes) {
@@ -63,30 +58,28 @@ const Organization = Parse.Object.extend("Organization", {
     }
 
     const rolesArray = Object.keys(roles).map(function(key) { return roles[key]; });
-    return Parse.Object.saveAll(rolesArray)
+    return Parse.Object.saveAll(rolesArray, { useMasterKey: true })
       .then(function() {
         roles[Enums.RoleTypes.Owner].getRoles().add([
           roles[Enums.RoleTypes.Admin],
           roles[Enums.RoleTypes.Billing]
         ]);
-        roles[Enums.RoleTypes.Owner].save();
+        roles[Enums.RoleTypes.Owner].save(null, { useMasterKey: true });
 
         roles[Enums.RoleTypes.Admin].getRoles().add([
           roles[Enums.RoleTypes.Member]
         ]);
-        roles[Enums.RoleTypes.Admin].save();
+        roles[Enums.RoleTypes.Admin].save(null, { useMasterKey: true });
       });
   },
 
   createBilling: function() {
-    Parse.Cloud.useMasterKey();
-
     const billing = new Billing();
     billing.set({
       "organization": this,
       "email": this.get("email")
     });
-    return billing.save();
+    return billing.save(null, { useMasterKey: true });
   },
 
   _newRoleForType: function(type) {

@@ -17,22 +17,18 @@ const User = Parse.Object.extend("_User", {
   },
 
   configureDefaultACL: function() {
-    Parse.Cloud.useMasterKey();
-
     const acl = new Parse.ACL(this);
     this.setACL(acl);
-    return this.save();
+    return this.save(null, { useMasterKey: true });
   },
 
   createBilling: function() {
-    Parse.Cloud.useMasterKey();
-
     const billing = new Billing();
     billing.set({
       "user": this,
       "email": this.get("email")
     });
-    return billing.save();
+    return billing.save(null, { useMasterKey: true });
   }
 
 }, {
