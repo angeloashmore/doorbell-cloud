@@ -1,57 +1,43 @@
-const Stripe = require('cloud/lib/Stripe');
+const Stripe = require("cloud/lib/Stripe");
+const Billing = require("cloud/classes/Billing");
+const Plan = require("cloud/classes/Plan");
 
 Parse.Cloud.define("Billing__subscribeToPlan", function(request, response) {
-  var user = request.user;
   var id = request.params.id;
   var planId = request.params.planId;
   var plan, billing;
 
   Parse.Promise.as().then(function() {
-    // Validate user and params.
-    if (!user) {
-      return Parse.Promise.error("User is not logged in");
-    }
+    // Check if a Billing ID was provided.
+    if (!id) return Parse.Promise.error("Billing ID was not provided");
 
-    if (!request.params.planId) {
-      return Parse.Promise.error("Plan ID was not provided");
-    }
+    // Check if a Plan ID was provided.
+    if (!planId) return Parse.Promise.error("Plan ID was not provided");
 
   }).then(function() {
-    var query = new Parse.Query("Billing");
+    const query = new Parse.Query(Billing);
     return query.get(id)
-      .fail(function(error) {
-        return Parse.Promise.error("Billing could not be found. Error:" + error);
+      .then(function(billing_) {
+        billing = billing_;
       });
 
-  }).then(function(_billing) {
-    billing = _billing;
-
-    var query = new Parse.Query("Plan");
+  }).then(function() {
+    const query = new Parse.Query(Plan);
     return query.get(planId)
-      .fail(function(error) {
-        return Parse.Promise.error("Plan could not be found. Error:" + error);
+      .then(function(plan_) {
+        plan = plan_;
       });
 
-  }).then(function(_plan) {
-    plan = _plan;
+  }).then(function() {
+    if (billing.type() != plan.type()) throw new MismatchedBillingType();
 
-    var stripeCustomerId = billing.get("stripeCustomerId");
-    var data = {
-      plan: plan.get("stripePlanId")
-    };
+    const stripeCustomerId = billing.get("stripeCustomerId");
+    const data = { plan: plan.get("stripePlanId") };
+    return Stripe.Customers.updateSubscription(stripeCustomerId, data);
 
-    return Stripe.Customers.updateSubscription(stripeCustomerId, data)
-      .fail(function(error) {
-        return Parse.Promise.error("Stripe Customer could not be updated. Error:" + error);
-      });
-
-  }).then(function(subscription) {
+  }).then(function() {
     billing.set("plan", plan);
-
-    return billing.save()
-      .fail(function(error) {
-        return Parse.Promise.error("Billing could not be updated. Error:" + error);
-      });
+    return billing.save();
 
   }).then(function(billing) {
     response.success(billing);

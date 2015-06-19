@@ -17,13 +17,12 @@ const Plan = Parse.Object.extend("Plan", {
     return validateRequiredAttrs(this.requiredAttrs, attrs);
   },
 
+  type: function() {
+    return this.get("type");
+  },
+
 }, {
   // Class methods
-  Types: Object.freeze({
-    Organization: "organization",
-    User: "user"
-  }),
-
   fetchWithStripeId: function(id) {
     const query = new Parse.Query(Plan);
     query.equalTo("stripePlanId", id);
