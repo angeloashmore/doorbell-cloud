@@ -1,4 +1,5 @@
 var methods = [
+  "_afterDelete",
   "_afterSave",
   "_beforeSave",
   "create"

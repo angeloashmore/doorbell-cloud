@@ -42,10 +42,28 @@ const Team = Parse.Object.extend("Team", {
     });
   },
 
+  findAllRoles: function() {
+    const query = new Parse.Query(Parse.Role);
+    query.equalTo("team", this);
+    return query.first();
+  },
+
   findRoleForType: function(type) {
     const query = new Parse.Query(Parse.Role);
     query.equalTo("name", this.roleNameForType(type));
     return query.first({ useMasterKey: true });
+  },
+
+  findBilling: function() {
+    const query = new Parse.Query(Billing);
+    query.equalTo("team", this);
+    return query.first();
+  },
+
+  findAllProfiles: function() {
+    const query = new Parse.Query(Profile);
+    query.equalTo("team", this);
+    return query.find();
   },
 
   roleNameForType: function(type) {
