@@ -4,12 +4,14 @@ const Profile = require("cloud/classes/Profile");
 const validateRequiredAttrs = require("cloud/lib/validateRequiredAttrs");
 
 const Team = Parse.Object.extend("Team", {
-  // Instance methods
+  // MARK: Instance properties
   requiredAttrs: [
     "name",
     "email"
   ],
 
+
+  // MARK: Instance methods
   validate: function(attrs, options) {
     return validateRequiredAttrs(this.requiredAttrs, attrs);
   },
@@ -22,11 +24,11 @@ const Team = Parse.Object.extend("Team", {
     return this.save(null, { useMasterKey: true });
   },
 
-  addUser: function(user, type) {
+  addUser: function(user, type, options) {
     const this_ = this;
     return this.findRoleForType(type).then(function(role) {
       role.getUsers().add(user);
-      return role.save(null, { useMasterKey: true });
+      return role.save(null, options);
 
     }).then(function() {
       const profile = new Profile();
@@ -42,35 +44,11 @@ const Team = Parse.Object.extend("Team", {
     });
   },
 
-  findAllRoles: function() {
-    const query = new Parse.Query(Parse.Role);
-    query.equalTo("team", this);
-    return query.first();
-  },
-
-  findRoleForType: function(type) {
-    const query = new Parse.Query(Parse.Role);
-    query.equalTo("name", this.roleNameForType(type));
-    return query.first({ useMasterKey: true });
-  },
-
-  findBilling: function() {
-    const query = new Parse.Query(Billing);
-    query.equalTo("team", this);
-    return query.first();
-  },
-
-  findAllProfiles: function() {
-    const query = new Parse.Query(Profile);
-    query.equalTo("team", this);
-    return query.find();
-  },
-
   roleNameForType: function(type) {
     return [this.id, type].join("__");
   },
 
-  createRoles: function() {
+  createRoles: function(options) {
     const roles = {};
 
     for (key in Enums.RoleTypes) {
@@ -79,30 +57,81 @@ const Team = Parse.Object.extend("Team", {
     }
 
     const rolesArray = Object.keys(roles).map(function(key) { return roles[key]; });
-    return Parse.Object.saveAll(rolesArray, { useMasterKey: true })
+    return Parse.Object.saveAll(rolesArray, options)
       .then(function() {
         roles[Enums.RoleTypes.Owner].getRoles().add([
           roles[Enums.RoleTypes.Admin],
           roles[Enums.RoleTypes.Billing]
         ]);
-        roles[Enums.RoleTypes.Owner].save(null, { useMasterKey: true });
+        roles[Enums.RoleTypes.Owner].save(null, options);
 
         roles[Enums.RoleTypes.Admin].getRoles().add([
           roles[Enums.RoleTypes.Member]
         ]);
-        roles[Enums.RoleTypes.Admin].save(null, { useMasterKey: true });
+        roles[Enums.RoleTypes.Admin].save(null, options);
       });
   },
 
-  createBilling: function() {
+  createBilling: function(options) {
     const billing = new Billing();
     billing.set({
       "team": this,
       "email": this.get("email")
     });
-    return billing.save(null, { useMasterKey: true });
+    return billing.save(null, options);
   },
 
+  destroyAllChildren: function(options) {
+    const this_ = this;
+    const roles, profiles, billing;
+
+    return this.findAllRoles()
+      .then(function(roles_) {
+        roles = roles_;
+        return this_.findBilling();
+
+      }).then(function(billing) {
+        billing = billing_;
+        return this_.findAllProfiles();
+
+      }).then(function(profiles_) {
+        profiles = profiles_;
+
+        Parse.Object.destroyAll(roles, options);
+        Parse.Object.destroyAll(profiles, options);
+        billing.destory(options);
+
+      });
+  },
+
+
+  // MARK: Instance query methods
+  findAllRoles: function(options) {
+    const query = new Parse.Query(Parse.Role);
+    query.equalTo("team", this);
+    return query.first(options);
+  },
+
+  findRoleForType: function(type, options) {
+    const query = new Parse.Query(Parse.Role);
+    query.equalTo("name", this.roleNameForType(type));
+    return query.first(options);
+  },
+
+  findBilling: function(options) {
+    const query = new Parse.Query(Billing);
+    query.equalTo("team", this);
+    return query.first(options);
+  },
+
+  findAllProfiles: function(options) {
+    const query = new Parse.Query(Profile);
+    query.equalTo("team", this);
+    return query.find(options);
+  },
+
+
+  // MARK: Instance private methods
   _newRoleForType: function(type) {
     const name = this.roleNameForType(type);
     const acl = this._newRoleACLForType(type);
@@ -136,7 +165,7 @@ const Team = Parse.Object.extend("Team", {
   }
 
 }, {
-  // Class methods
+  // MARK: Class methods
 });
 
 module.exports = Team;

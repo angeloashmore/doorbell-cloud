@@ -17,7 +17,16 @@ Parse.Cloud.define("Team__create", function(request, response) {
     return team.save(null, { useMasterKey: true });
 
   }).then(function(team) {
-    return team.addUser(user, Enums.RoleTypes.Owner);
+    return team.configureDefaultACL();
+
+  }).then(function(team) {
+    return team.createRoles({ useMasterKey: true })
+
+  }).then(function(team) {
+    return team.createBilling({ useMasterKey: true });
+
+  }).then(function(team) {
+    return team.addUser(user, Enums.RoleTypes.Owner, { useMasterKey: true });
 
   }).then(function(team) {
     response.success(team);
