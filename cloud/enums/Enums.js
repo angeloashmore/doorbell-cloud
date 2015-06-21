@@ -6,6 +6,6 @@ exports.RoleTypes = Object.freeze({
 });
 
 exports.BillingTypes = Object.freeze({
-  Organization: "organization",
+  Team: "team",
   User: "user"
 });

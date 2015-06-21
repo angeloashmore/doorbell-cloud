@@ -8,7 +8,7 @@ const Profile = Parse.Object.extend("Profile", {
 
   requiredAttrs: [
     "user",
-    "organization",
+    "team",
     "private"
   ],
 

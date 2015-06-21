@@ -3,7 +3,7 @@ const Billing = require("cloud/classes/Billing");
 const Profile = require("cloud/classes/Profile");
 const validateRequiredAttrs = require("cloud/lib/validateRequiredAttrs");
 
-const Organization = Parse.Object.extend("Organization", {
+const Team = Parse.Object.extend("Team", {
   // Instance methods
   requiredAttrs: [
     "name",
@@ -26,15 +26,18 @@ const Organization = Parse.Object.extend("Organization", {
     const this_ = this;
     return this.findRoleForType(type).then(function(role) {
       role.getUsers().add(user);
-      role.save(null, { useMasterKey: true });
+      return role.save(null, { useMasterKey: true });
 
     }).then(function() {
-      const profile = new Parse.Object(Profile);
+      const profile = new Profile();
       profile.set({
         "user": user,
-        "organization": this_
+        "team": this_
       });
       return profile.save(null, { useMasterKey: true });
+
+    }).then(function() {
+      return this_;
 
     });
   },
@@ -42,7 +45,7 @@ const Organization = Parse.Object.extend("Organization", {
   findRoleForType: function(type) {
     const query = new Parse.Query(Parse.Role);
     query.equalTo("name", this.roleNameForType(type));
-    return query.first();
+    return query.first({ useMasterKey: true });
   },
 
   roleNameForType: function(type) {
@@ -76,7 +79,7 @@ const Organization = Parse.Object.extend("Organization", {
   createBilling: function() {
     const billing = new Billing();
     billing.set({
-      "organization": this,
+      "team": this,
       "email": this.get("email")
     });
     return billing.save(null, { useMasterKey: true });
@@ -86,7 +89,7 @@ const Organization = Parse.Object.extend("Organization", {
     const name = this.roleNameForType(type);
     const acl = this._newRoleACLForType(type);
     const role = new Parse.Role(name, acl);
-    role.set("organization", this);
+    role.set("team", this);
     return role;
   },
 
@@ -118,4 +121,4 @@ const Organization = Parse.Object.extend("Organization", {
   // Class methods
 });
 
-module.exports = Organization;
+module.exports = Team;

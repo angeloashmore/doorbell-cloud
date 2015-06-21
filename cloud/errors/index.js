@@ -1,6 +1,7 @@
 const errors = [
   "InvalidAttrValues",
   "OnlyNewObjects",
+  "UserNotLoggedIn",
   "RequiredAttrsMissing"
 ];
 

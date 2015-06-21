@@ -5,9 +5,9 @@ var definitions = [
   "Event",
   "EventInvitation",
   "Layer",
-  "Organization",
   "Plan",
-  "Profile"
+  "Profile",
+  "Team"
 ]
 
 definitions.forEach(function(namespace) {

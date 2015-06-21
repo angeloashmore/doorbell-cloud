@@ -4,7 +4,7 @@ const validateRequiredAttrs = require("cloud/lib/validateRequiredAttrs");
 const Role = Parse.Object.extend("_Role", {
   // Instance methods
   requiredAttrs: [
-    "organization"
+    "team"
   ],
 
   validate: function(attrs, options) {

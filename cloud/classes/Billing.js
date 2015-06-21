@@ -15,15 +15,15 @@ const Billing = Parse.Object.extend("Billing", {
 
   configureDefaultACL: function() {
     const user = this.get("user");
-    const organization = this.get("organization");
+    const team = this.get("team");
     const acl = new Parse.ACL();
 
     if (!!user) {
       acl.setReadAccess(user, true);
       acl.setWriteAccess(user, true);
-    } else if (!!organization) {
-      acl.setRoleReadAccess(organization.roleNameForType(Enums.RoleTypes.Billing), true);
-      acl.setRoleWriteAccess(organization.roleNameForType(Enums.RoleTypes.Billing), true);
+    } else if (!!team) {
+      acl.setRoleReadAccess(team.roleNameForType(Enums.RoleTypes.Billing), true);
+      acl.setRoleWriteAccess(team.roleNameForType(Enums.RoleTypes.Billing), true);
     }
 
     this.setACL(acl);
@@ -33,8 +33,8 @@ const Billing = Parse.Object.extend("Billing", {
   type: function() {
     if (!!this.get("user")) {
       return Enums.BillingTypes.User;
-    } else if (!!this.get("organization")) {
-      return Enums.BillingTypes.Organization;
+    } else if (!!this.get("team")) {
+      return Enums.BillingTypes.Team;
     }
 
     throw new Error("Could not determine type");
@@ -62,7 +62,7 @@ const Billing = Parse.Object.extend("Billing", {
     return Stripe.Customers.updateSubscription(stripeCustomerId, data)
       .then(function() {
         this_.set("plan", plan);
-        return this_.save();
+        return this_.save(null, { useMasterKey: true });
       });
   }
 

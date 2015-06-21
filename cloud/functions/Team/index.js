@@ -1,8 +1,9 @@
 var methods = [
   "_afterSave",
-  "_beforeSave"
+  "_beforeSave",
+  "create"
 ];
 
 methods.forEach(function(method) {
-  require("cloud/functions/Organization/" + method);
+  require("cloud/functions/Team/" + method);
 });

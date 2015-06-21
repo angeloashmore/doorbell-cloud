@@ -10,7 +10,7 @@ const Plan = Parse.Object.extend("Plan", {
   ],
 
   validate: function(attrs, options) {
-    if (["user", "organization"].indexOf(attrs["type"]) < 0) {
+    if (["user", "team"].indexOf(attrs["type"]) < 0) {
       throw new Errors.InvalidAttrValues(["type"]);
     }
 
@@ -30,8 +30,8 @@ const Plan = Parse.Object.extend("Plan", {
   },
 
   fetchDefaultPlanForType: function(type) {
-    if (type == Enums.BillingTypes.Organization) {
-      return Plan.fetchWithStripeId("ORGANIZATION__FREE");
+    if (type == Enums.BillingTypes.Team) {
+      return Plan.fetchWithStripeId("TEAM__FREE");
     } else if (type == Enums.BillingTypes.User) {
       return Plan.fetchWithStripeId("USER__FREE");
     }
