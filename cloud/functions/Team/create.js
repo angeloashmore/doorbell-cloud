@@ -4,31 +4,26 @@ const Team = require("cloud/classes/Team");
 
 Parse.Cloud.define("Team__create", function(request, response) {
   const user = request.user;
+  var team;
 
   Parse.Promise.as().then(function() {
     if (!user) throw new Errors.UserNotLoggedIn();
 
   }).then(function() {
-    const team = new Team();
+    team = new Team();
     team.set({
       name: request.params.name,
       email: request.params.email
     });
+    team.setACL(team.defaultACL());
     return team.save(null, { useMasterKey: true });
 
-  }).then(function(team) {
-    return team.configureDefaultACL();
+  }).then(function() {
+    team.createRoles({ useMasterKey: true })
+    team.createBilling({ useMasterKey: true });
+    team.addUser(user, Enums.RoleTypes.Owner, { useMasterKey: true });
 
-  }).then(function(team) {
-    return team.createRoles({ useMasterKey: true })
-
-  }).then(function(team) {
-    return team.createBilling({ useMasterKey: true });
-
-  }).then(function(team) {
-    return team.addUser(user, Enums.RoleTypes.Owner, { useMasterKey: true });
-
-  }).then(function(team) {
+  }).then(function() {
     response.success(team);
 
   }, function(error) {

@@ -16,17 +16,16 @@ const Team = Parse.Object.extend("Team", {
     return validateRequiredAttrs(this.requiredAttrs, attrs);
   },
 
-  configureDefaultACL: function() {
+  defaultACL: function() {
     const acl = new Parse.ACL();
     acl.setRoleReadAccess(this.roleNameForType(Enums.RoleTypes.Member), true);
     acl.setRoleWriteAccess(this.roleNameForType(Enums.RoleTypes.Owner), true);
-    this.setACL(acl);
-    return this.save(null, { useMasterKey: true });
+    return acl;
   },
 
   addUser: function(user, type, options) {
     const this_ = this;
-    return this.findRoleForType(type).then(function(role) {
+    return this.findRoleForType(type, options).then(function(role) {
       role.getUsers().add(user);
       return role.save(null, options);
 
@@ -44,10 +43,6 @@ const Team = Parse.Object.extend("Team", {
     });
   },
 
-  roleNameForType: function(type) {
-    return [this.id, type].join("__");
-  },
-
   createRoles: function(options) {
     const roles = {};
 
@@ -59,14 +54,14 @@ const Team = Parse.Object.extend("Team", {
     const rolesArray = Object.keys(roles).map(function(key) { return roles[key]; });
     return Parse.Object.saveAll(rolesArray, options)
       .then(function() {
-        roles[Enums.RoleTypes.Owner].getRoles().add([
+        roles[Enums.RoleTypes.Member].getRoles().add([
           roles[Enums.RoleTypes.Admin],
-          roles[Enums.RoleTypes.Billing]
+          roles[Enums.RoleTypes.Owner]
         ]);
-        roles[Enums.RoleTypes.Owner].save(null, options);
+        roles[Enums.RoleTypes.Member].save(null, options);
 
         roles[Enums.RoleTypes.Admin].getRoles().add([
-          roles[Enums.RoleTypes.Member]
+          roles[Enums.RoleTypes.Owner]
         ]);
         roles[Enums.RoleTypes.Admin].save(null, options);
       });
@@ -102,6 +97,10 @@ const Team = Parse.Object.extend("Team", {
         billing.destory(options);
 
       });
+  },
+
+  roleNameForType: function(type) {
+    return [this.id, type].join("__");
   },
 
 
