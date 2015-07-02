@@ -1,4 +1,4 @@
-const Stripe = require("cloud/lib/Stripe");
+const Stripe = require("cloud/lib/stripe");
 const Billing = require("cloud/classes/Billing");
 const Plan = require("cloud/classes/Plan");
 
