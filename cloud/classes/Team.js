@@ -85,7 +85,7 @@ const Team = Parse.Object.extend("Team", {
         roles = roles_;
         return this_.findBilling();
 
-      }).then(function(billing) {
+      }).then(function(billing_) {
         billing = billing_;
         return this_.findAllProfiles();
 
