@@ -23,6 +23,11 @@ const Team = Parse.Object.extend("Team", {
     return acl;
   },
 
+  configureDefaultACL: function() {
+    this.setACL(this.defaultACL());
+    return this.save(null, { useMasterKey: true });
+  },
+
   addUser: function(user, type, options) {
     const this_ = this;
     return this.findRoleForType(type, options).then(function(role) {
@@ -78,23 +83,25 @@ const Team = Parse.Object.extend("Team", {
 
   destroyAllChildren: function(options) {
     const this_ = this;
-    const roles, profiles, billing;
+    var roles, profiles, billing;
 
-    return this.findAllRoles()
+    return this.findAllRoles(options)
       .then(function(roles_) {
         roles = roles_;
-        return this_.findBilling();
 
-      }).then(function(billing) {
+        return this_.findBilling(options);
+
+      }).then(function(billing_) {
         billing = billing_;
-        return this_.findAllProfiles();
+
+        return this_.findAllProfiles(options);
 
       }).then(function(profiles_) {
         profiles = profiles_;
 
         Parse.Object.destroyAll(roles, options);
         Parse.Object.destroyAll(profiles, options);
-        billing.destory(options);
+        billing.destroy(options);
 
       });
   },
@@ -108,7 +115,7 @@ const Team = Parse.Object.extend("Team", {
   findAllRoles: function(options) {
     const query = new Parse.Query(Parse.Role);
     query.equalTo("team", this);
-    return query.first(options);
+    return query.find(options);
   },
 
   findRoleForType: function(type, options) {
