@@ -78,7 +78,7 @@ const Team = Parse.Object.extend("Team", {
 
   destroyAllChildren: function(options) {
     const this_ = this;
-    const roles, profiles, billing;
+    var roles, profiles, billing;
 
     return this.findAllRoles()
       .then(function(roles_) {
