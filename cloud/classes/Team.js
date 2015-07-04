@@ -94,7 +94,7 @@ const Team = Parse.Object.extend("Team", {
 
         Parse.Object.destroyAll(roles, options);
         Parse.Object.destroyAll(profiles, options);
-        billing.destory(options);
+        billing.destroy(options);
 
       });
   },
