@@ -30,9 +30,9 @@ Parse.Cloud.define("Billing__addCard", function(request, response) {
 
     billing.set({
       "brand": source.brand,
-      "last4": source.last4,
-      "expMonth": source.exp_month,
-      "expYear": source.exp_year
+      "last4": String(source.last4),
+      "expMonth": String(source.exp_month),
+      "expYear": String(source.exp_year)
     });
     return billing.save();
 
