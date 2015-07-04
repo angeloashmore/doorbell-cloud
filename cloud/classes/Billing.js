@@ -1,4 +1,4 @@
-const Stripe = require("cloud/lib/Stripe");
+const Stripe = require("cloud/lib/stripe");
 const Plan = require("cloud/classes/Plan");
 const Enums = require("cloud/enums/Enums");
 const validateRequiredAttrs = require("cloud/lib/validateRequiredAttrs");

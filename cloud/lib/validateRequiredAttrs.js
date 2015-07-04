@@ -4,7 +4,18 @@ module.exports = function(requiredAttrs, object) {
   const missingAttrs = [];
 
   requiredAttrs.forEach(function(key) {
-    if (object[key] === undefined) missingAttrs.push(key);
+    var isMissing = false;
+
+    switch (typeof key) {
+      case "string":
+        if (object[key].length <= 0) isMissing = true;
+        break;
+      default:
+        if (object[key] === undefined) isMissing = true
+        break;
+    }
+
+    if (isMissing) missingAttrs.push(key);
   });
 
   if (missingAttrs.length > 0) {

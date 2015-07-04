@@ -1,4 +1,4 @@
-const Stripe = require("cloud/lib/Stripe");
+const Stripe = require("cloud/lib/stripe");
 const Billing = require("cloud/classes/Billing");
 
 Parse.Cloud.define("Billing__addCard", function(request, response) {
@@ -14,7 +14,7 @@ Parse.Cloud.define("Billing__addCard", function(request, response) {
     if (!token) return Parse.Promise.error("Stripe token was not provided");
 
   }).then(function() {
-    const query = Parse.Query(Billing);
+    const query = new Parse.Query(Billing);
     return query.get(id)
       .then(function(billing_) {
         billing = billing_;

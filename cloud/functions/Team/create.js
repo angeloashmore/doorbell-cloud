@@ -15,6 +15,7 @@ Parse.Cloud.define("Team__create", function(request, response) {
       name: request.params.name,
       email: request.params.email
     });
+    team.setACL(new Parse.ACL());
     return team.save(null, { useMasterKey: true });
 
   }).then(function() {
