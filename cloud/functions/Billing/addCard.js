@@ -40,6 +40,6 @@ Parse.Cloud.define("Billing__addCard", function(request, response) {
     response.success(billing);
 
   }, function(error) {
-    response.error(billing);
+    response.error(error);
   });
 });
