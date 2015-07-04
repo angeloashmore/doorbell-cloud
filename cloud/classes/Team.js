@@ -23,6 +23,11 @@ const Team = Parse.Object.extend("Team", {
     return acl;
   },
 
+  configureDefaultACL: function() {
+    this.setACL(this.defaultACL());
+    return this.save(null, { useMasterKey: true });
+  },
+
   addUser: function(user, type, options) {
     const this_ = this;
     return this.findRoleForType(type, options).then(function(role) {
